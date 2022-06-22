@@ -15,7 +15,9 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 
 
-contract ERC721Identifier is Context, ERC165, AccessControl, IERC721, IERC721Metadata {
+abstract contract ERC721Identifier is ERC165, AccessControl, IERC721, IERC721Metadata {
+
+    // STILL HAVE TO ADD MINT FUNCTION
 
     string private _name;
     string private _symbol;
@@ -34,7 +36,7 @@ contract ERC721Identifier is Context, ERC165, AccessControl, IERC721, IERC721Met
 
     mapping(address => mapping(address => bool)) private _operatorApprovals;
 
-    constructor(string memory name_, string memory symbol_) public {
+    constructor(string memory name_, string memory symbol_) {
         _grantRole(MINTER_ROLE, msg.sender);
         _name = name_; // will set to Synchrony digital ID collection.  This is the name for collection of all IDs.  Each ID within the collection will have different data within it
         _symbol = symbol_; // brief description of what it is, mention my name, also list Synchrony's public ID
@@ -153,9 +155,6 @@ contract ERC721Identifier is Context, ERC165, AccessControl, IERC721, IERC721Met
         return "";
     }
     
-    
-
-
     function _requireMinted(uint256 tokenId) internal view virtual {
         require(_exists(tokenId), "ERC721: invalid token ID");
     }
@@ -168,8 +167,7 @@ contract ERC721Identifier is Context, ERC165, AccessControl, IERC721, IERC721Met
         return
             interfaceId == type(IERC721).interfaceId ||
             interfaceId == type(IERC721Metadata).interfaceId ||
-            interfaceId == type(IAccessControl).interfaceId;
+            interfaceId == type(AccessControl).interfaceId ||
             super.supportsInterface(interfaceId);
     }
-
 }
