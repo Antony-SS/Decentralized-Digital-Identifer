@@ -43,7 +43,8 @@ abstract contract ERC721Identifier is ERC721Enumerable, AccessControl {
         virtual
         override(ERC721Enumerable)
     {
-        require(from == address(0) || to == address(0), "ERC721Identifer: this digital ID is bound to your wallet.  Contact the minter (Synchrony) if you wish to change the location of your ID");
+        require(hasRole(MINTER_ROLE, msg.sender), "ERC721Identifer: this digital ID is bound to your wallet.  Contact the minter (Synchrony) if you wish to change the location of your ID");
+        // require(from == address(0) || to == address(0), "Non transferrable token"); Still debating if I even want Synchrony to have this privilege
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
