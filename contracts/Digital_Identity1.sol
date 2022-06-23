@@ -15,8 +15,9 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 
 
+// THIS CONTRACT IS A ROUGH DRAFT AND UNFINISHED.  USE ERC721Identifier
 
-abstract contract ERC721Identifier is ERC165, AccessControl, IERC721, IERC721Metadata {
+abstract contract ERC721Identifierroughdraft is ERC165, AccessControl, IERC721, IERC721Metadata {
 
     // STILL HAVE TO ADD MINT FUNCTION
 

@@ -10,8 +10,9 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "./addressToString.sol";
+import "hardhat/console.sol";
 
-abstract contract ERC721Identifier is ERC721Enumerable, AccessControl {
+contract ERC721Identifier is ERC721Enumerable, AccessControl {
     
     // creating a minter role for access throughout the contract
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
@@ -23,9 +24,6 @@ abstract contract ERC721Identifier is ERC721Enumerable, AccessControl {
     // base URI that stays constant for all NFTs (if I switch to IPFS, I won't need this)
     string private baseURI = "";
 
-    // Name for the NFT collection - Will call something like Synchrony's Digital Identifiers
-    string _name;
-    string _symbol;
 
     // Taken from the URI storage contract.  This is map associates token IDs with their given URIs which is nessecary if there is no way to reverse engineer the URIs later down the line
     // So if I use the getsandbox then I can use a public address as a query parameter to find the appropriate URI
@@ -36,11 +34,9 @@ abstract contract ERC721Identifier is ERC721Enumerable, AccessControl {
 
 
     // Constructor takes a collection name and symbol to describe the collection.  Sets the minter role to the wallet minting the contract, and sets the base URI
-    constructor(string memory name_, string memory symbol_, string memory baseURI_) {
+    constructor(string memory name_, string memory symbol_, string memory baseURI_) ERC721(name_, symbol_) {
         _grantRole(MINTER_ROLE, msg.sender);
         _setBaseURI(baseURI_);
-        _name = name_;
-        _symbol = symbol_;
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Enumerable, AccessControl) returns (bool) {
@@ -56,6 +52,7 @@ abstract contract ERC721Identifier is ERC721Enumerable, AccessControl {
         virtual
         override(ERC721Enumerable)
     {
+        console.log("Checking if has minter role");
         require(hasRole(MINTER_ROLE, msg.sender), "ERC721Identifer: this digital ID is bound to your wallet.  Contact the minter (Synchrony) if you wish to change the location of your ID");
         // require(from == address(0) || to == address(0), "Non transferrable token"); Still debating if I even want Synchrony to have this privilege
         require((balanceOf(to) == 0) || (to == address(0)), "Can only hold one digitalID per wallet, this wallet already has one!");
@@ -72,6 +69,7 @@ abstract contract ERC721Identifier is ERC721Enumerable, AccessControl {
         uint256 newTokenId = _tokenIds.current();
         _mint(to, newTokenId);
         _setTokenURI(newTokenId, toAsciiString(to)); // the second argument here should be the IPFS storage hash
+        console.log("%s has been given a token with id %s and uri %s", to, newTokenId, _tokenURIs[newTokenId]);
         emit NewIdentifierMinted(msg.sender, to, newTokenId, _tokenURIs[newTokenId], block.timestamp);
     }
 
