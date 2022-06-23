@@ -45,6 +45,7 @@ abstract contract ERC721Identifier is ERC721Enumerable, AccessControl {
     {
         require(hasRole(MINTER_ROLE, msg.sender), "ERC721Identifer: this digital ID is bound to your wallet.  Contact the minter (Synchrony) if you wish to change the location of your ID");
         // require(from == address(0) || to == address(0), "Non transferrable token"); Still debating if I even want Synchrony to have this privilege
+        require((balanceOf(to) == 0) || (to == address(0)), "Can only hold one digitalID per wallet, this wallet already has one!");
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
@@ -60,16 +61,12 @@ abstract contract ERC721Identifier is ERC721Enumerable, AccessControl {
         _setTokenURI(newTokenId, Strings.toString(newTokenId)); // the second argument here should be the IPFS storage hash
     }
 
-    function setBaseURI(string memory baseURI) public {
-        require(
-            hasRole(MINTER_ROLE, msg.sender),
-            "NonTransferrableERC721Token: account does not have minter role, contact Synchrony about this"
-        );
-        _setBaseURI(baseURI);
-    }
-
     function _setBaseURI(string memory baseURI_) internal {
         baseURI = baseURI_;
+    }
+
+    function _baseURI() internal view override returns(string memory) {
+        return baseURI;
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
