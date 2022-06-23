@@ -62,15 +62,15 @@ contract ERC721Identifier is ERC721Enumerable, AccessControl {
     function mint(address to) public {
         require(
             hasRole(MINTER_ROLE, msg.sender),
-            "NonTransferrableERC721Token: account does not have minter role"
+            "ERC721Identifer: Only MINTER_ROLE has this permission.  Your account does not have MINTER_ROLE"
         );
         
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
         _mint(to, newTokenId);
-        _setTokenURI(newTokenId, toAsciiString(to)); // the second argument here should be the IPFS storage hash
-        console.log("%s has been given a token with id %s and uri %s", to, newTokenId, _tokenURIs[newTokenId]);
-        emit NewIdentifierMinted(msg.sender, to, newTokenId, _tokenURIs[newTokenId], block.timestamp);
+        _setTokenURI(newTokenId, Strings.toHexString(uint256(uint160(to)), 20)); // the second argument here should be the IPFS storage hash
+        console.log("%s has been given a token with id %s and uri %s", to, newTokenId, tokenURI(newTokenId));
+        emit NewIdentifierMinted(msg.sender, to, newTokenId, tokenURI(newTokenId), block.timestamp);
     }
 
     function _setBaseURI(string memory baseURI_) internal {
