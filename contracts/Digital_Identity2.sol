@@ -9,23 +9,36 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "./addressToString.sol";
 
 abstract contract ERC721Identifier is ERC721Enumerable, AccessControl {
     
+    // creating a minter role for access throughout the contract
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     using Counters for Counters.Counter;
+
+    // counter _token.ids to increment for each new nft minted
     Counters.Counter private _tokenIds;
+
+    // base URI that stays constant for all NFTs (if I switch to IPFS, I won't need this)
     string private baseURI = "";
+
+    // Name for the NFT collection - Will call something like Synchrony's Digital Identifiers
     string _name;
     string _symbol;
 
-    // Taken from the URI storage contract.  Because if I use IPFS hashes will be random, there is no way to reverse engineer URIs so I must store them
-
+    // Taken from the URI storage contract.  This is map associates token IDs with their given URIs which is nessecary if there is no way to reverse engineer the URIs later down the line
+    // So if I use the getsandbox then I can use a public address as a query parameter to find the appropriate URI
+    // if I use IPFS hashes will be random, there is no way to reverse engineer URIs so I must store them
     mapping(uint256 => string) private _tokenURIs;
 
-    constructor(string memory name_, string memory symbol_) {
+    event NewIdentifierMinted(address indexed from, address indexed to, uint256 tokenID, string tokenURI, uint256 timestamp);
+
+
+    // Constructor takes a collection name and symbol to describe the collection.  Sets the minter role to the wallet minting the contract, and sets the base URI
+    constructor(string memory name_, string memory symbol_, string memory baseURI_) {
         _grantRole(MINTER_ROLE, msg.sender);
-        _setBaseURI("https://example.com/tokens/");
+        _setBaseURI(baseURI_);
         _name = name_;
         _symbol = symbol_;
     }
@@ -58,7 +71,8 @@ abstract contract ERC721Identifier is ERC721Enumerable, AccessControl {
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
         _mint(to, newTokenId);
-        _setTokenURI(newTokenId, Strings.toString(newTokenId)); // the second argument here should be the IPFS storage hash
+        _setTokenURI(newTokenId, toAsciiString(to)); // the second argument here should be the IPFS storage hash
+        emit NewIdentifierMinted(msg.sender, to, newTokenId, _tokenURIs[newTokenId], block.timestamp);
     }
 
     function _setBaseURI(string memory baseURI_) internal {
