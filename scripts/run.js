@@ -3,7 +3,7 @@ const { ethers } = require("ethers");
 const main = async () => {
   const [owner, randomPerson] = await hre.ethers.getSigners(); // 
   const identifierContractFactory = await hre.ethers.getContractFactory('ERC721Identifier');
-  const identifierContract = await identifierContractFactory.deploy('Synchrony Digital ID Collection', 'symbol things', "AntsSandBox/");
+  const identifierContract = await identifierContractFactory.deploy('Synchrony Digital ID Collection', 'symbol things', "https://identifier-database.getsandbox.com/identifiers/");
   await identifierContract.deployed();
   console.log("Contract deployed to:", identifierContract.address);
   console.log("Contract delployed by:", owner.address);
