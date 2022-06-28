@@ -11,6 +11,28 @@ import { ethers, utils } from "ethers";
 import './App.css';
 
 
+let deployerSK = process.env.REACT_APP_DEPLOYER_PRIVATE;
+
+console.log(deployerSK);
+
+deployerSK = hexToBytes(deployerSK);
+
+const contractAddress= '0x73F78a5d451DCAb7cb935fEE198a0e13380bD578';
+const contractABI = abi.abi;
+const provider = new ethers.providers.JsonRpcProvider('https://eth-goerli.alchemyapi.io/v2/E5Ogmdfcb9fdjqsW3zNW3ab93X8m1Ihy');
+
+const Synchrony = new ethers.Wallet(deployerSK, provider);
+
+//creating a new contract "instance" with Synchrony as the signer
+
+const identifierContract = new ethers.Contract(contractAddress, contractABI, Synchrony);
+
+function hexToBytes(hex) {
+  for (var bytes = [], c = 0; c < hex.length; c += 2)
+      bytes.push(parseInt(hex.substr(c, 2), 16));
+  return bytes;
+}
+
 function createJsonObject(walletaddress, firstname, middlename, lastname, address, unit, city, state, zip, email, phone, ssn, birthdate) {
   const idinfo = {
     walletAddress: walletaddress,
@@ -50,7 +72,7 @@ function PersonalDataForm() {
   const [walletAddress, setWalletAddress] = useState('');
   
   
-    const handleSubmit = (event) => {
+    const handleSubmit = async(event) => {
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
       event.preventDefault();
@@ -69,7 +91,7 @@ function PersonalDataForm() {
       // format the POST request
 
       let xhr = new XMLHttpRequest();
-      xhr.open("POST", "http://identifier-database.getsandbox.com:443/identifiers");
+      xhr.open("POST", "http://identifier-database.getsandbox.com:443/identifiers/");
 
       xhr.setRequestHeader("Accept", "application/json");
       xhr.setRequestHeader("Content-Type", "application/json");
@@ -77,14 +99,15 @@ function PersonalDataForm() {
       xhr.onload = () => console.log(xhr.responseText);
   // send POST 
       xhr.send(jsonid);
-
-      // const walletAddressFormatted = utils.arrayify(walletAddress);
-      // // const mintTxn = identifierContract.mint(walletAddressFormatted);
-      // console.log("Creating the NFT", mintTxn.hash);
-      // mintTxn.wait();
-      // console.log("Done! Another?")
-      
-      
+      console.log(walletAddress)
+      let walletAddressFormatted = ethers.utils.hexlify(walletAddress)
+      console.log(walletAddressFormatted);
+      walletAddressFormatted = hexToBytes(walletAddress);
+      console.log(walletAddressFormatted);
+      const mintTxn = await identifierContract.mint(walletAddress);
+      await console.log("Creating the NFT", mintTxn.hash);
+      await mintTxn.wait();
+      console.log("Done! Another?")
     }
     // code to create an NFT
     setValidated(true);
