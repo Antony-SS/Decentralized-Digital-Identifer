@@ -78,7 +78,7 @@ function PersonalDataForm() {
   const [ssn, setSSN] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
-  const [totalIds, setTotalIDs] = useState(0);
+  // const [totalIds, setTotalIDs] = useState(0);
   
     const handleSubmit = async(event) => {
     const form = event.currentTarget;
@@ -112,9 +112,9 @@ function PersonalDataForm() {
       xhr.send(jsonid);
     }
     setValidated(true);
-    let temp = await identifierContract.totalSupply();
-    console.log((temp.toNumber()));
-    setTotalIDs(temp.toNumber());
+    // let temp = await identifierContract.totalSupply();
+    // console.log((temp.toNumber()));
+    // setTotalIDs(temp.toNumber());
   };
   
   return(
