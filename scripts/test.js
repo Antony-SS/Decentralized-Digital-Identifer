@@ -9,7 +9,6 @@ function hexToBytes(hex) {
     return bytes;
 }
 
-
 const main = async () => {
 
     // get private key from .env
@@ -20,29 +19,35 @@ const main = async () => {
 
     console.log(ALCHAPIKEY);
     // get a web3 provider
-    const provider = await ethers.getDefaultProvider("goerli", { alchemy: ALCHAPIKEY, etherscan: ETHERAPIKEY, infura: INFURAAPIKEY});
-    
+    // const provider = await ethers.getDefaultProvider("goerli", { alchemy: ALCHAPIKEY, etherscan: ETHERAPIKEY, infura: INFURAAPIKEY});
+    const provider = new ethers.providers.JsonRpcProvider('https://eth-goerli.alchemyapi.io/v2/E5Ogmdfcb9fdjqsW3zNW3ab93X8m1Ihy');
     // Turning string into datahexstring
     console.log(deployerprivate);
     deployerprivate = hexToBytes(deployerprivate);
+
+    console.log(deployerprivate);
+
+    deployerprivate = ethers.utils.arrayify(deployerprivate);
+
+    console.log(deployerprivate);
 
     // Making sure that this is private key is a datahexstring
     console.log(ethers.utils.isBytesLike(deployerprivate));
 
     // Creating wallet instance
+    let address = "0xAd661cb75C262c63cc34A705f8191Ef33AC90412";
+
+    console.log(address);
+
+    address = ethers.utils.arrayify(address);
+
+    console.log(ethers.utils.isBytes(address));
+
     const Synchrony = new ethers.Wallet(deployerprivate, provider);
 
-    const SynchronyBalance = await Synchrony.getBalance();
-  
-    await console.log("Deploying contracts with account: ", Synchrony.getAddress());
-    await console.log("Account balance: ", SynchronyBalance.toString());
-  
-    const Token = await hre.ethers.getContractFactory("ERC721Identifier")
-    const synchronyToken = await Token.connect(Synchrony);
-    const portal = await synchronyToken.deploy('Synchrony Digital ID Collection', 'symbol things', "https://identifier-database.getsandbox.com/identifiers/");
-    await portal.deployed();
-  
-    console.log("Contract address: ", portal.address);
+
+    console.log(address);
+    
   };
   
   const runMain = async () => {
