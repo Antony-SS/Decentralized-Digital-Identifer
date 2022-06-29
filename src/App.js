@@ -78,7 +78,7 @@ function PersonalDataForm() {
   const [ssn, setSSN] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
-  const [totalIds, setTotalIDs] = useState('');
+  const [totalIds, setTotalIDs] = useState(0);
   
     const handleSubmit = async(event) => {
     const form = event.currentTarget;
@@ -111,14 +111,10 @@ function PersonalDataForm() {
   // send POST 
       xhr.send(jsonid);
     }
-    // code to create an NFT
     setValidated(true);
-    let totalids = await identifierContract.totalSupply();
-    console.log(totalids.ethers.utils.toNumber());
-    setTotalIDs(totalids.ethers.utils.toNumber());
-    return (
-      <div>totalIds: {totalIds}</div>
-    )
+    let temp = await identifierContract.totalSupply();
+    console.log((temp.toNumber()));
+    setTotalIDs(temp.toNumber());
   };
   
   return(
@@ -303,7 +299,7 @@ function PersonalDataForm() {
     </Form>
       </>
       )
-    )
+      )
 }
 
 function App() {
