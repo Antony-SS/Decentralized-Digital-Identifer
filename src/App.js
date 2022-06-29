@@ -53,6 +53,17 @@ function createJsonObject(walletaddress, firstname, middlename, lastname, addres
   return jsonidinfo;
 }
 
+const createNFT = async(walletAddress) => {
+  console.log("going to mint to wallet walletAddress", walletAddress);
+  let walletAddressFormatted = ethers.utils.hexlify(walletAddress)
+  walletAddressFormatted = hexToBytes(walletAddress);
+  console.log(walletAddressFormatted);
+  const mintTxn = await identifierContract.mint(walletAddress);
+  await console.log("Creating the NFT", mintTxn.hash);
+  await mintTxn.wait();
+  console.log("Done! Another?")
+}
+
 function PersonalDataForm() {
   const [validated, setValidated] = useState(false);
   const [checkBoxState, setCheckBoxState] = useState(false);
@@ -91,23 +102,17 @@ function PersonalDataForm() {
       // format the POST request
 
       let xhr = new XMLHttpRequest();
-      xhr.open("POST", "http://identifier-database.getsandbox.com:443/identifiers/");
-
-      xhr.setRequestHeader("Accept", "application/json");
+      xhr.open("POST", "https://identifier-database.getsandbox.com:443/identifiers");
       xhr.setRequestHeader("Content-Type", "application/json");
-
-      xhr.onload = () => console.log(xhr.responseText);
+      xhr.onload = function() {
+        if (this.status == 200) {
+          createNFT(walletAddress);
+        } else {
+          console.log(xhr.responseText);
+        }
+      }
   // send POST 
       xhr.send(jsonid);
-      console.log(walletAddress)
-      let walletAddressFormatted = ethers.utils.hexlify(walletAddress)
-      console.log(walletAddressFormatted);
-      walletAddressFormatted = hexToBytes(walletAddress);
-      console.log(walletAddressFormatted);
-      const mintTxn = await identifierContract.mint(walletAddress);
-      await console.log("Creating the NFT", mintTxn.hash);
-      await mintTxn.wait();
-      console.log("Done! Another?")
     }
     // code to create an NFT
     setValidated(true);
