@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import Navbar from 'react-bootstrap/Navbar';
 import Form from 'react-bootstrap/Form';
 import mainLogo from'./SYF.png';
@@ -7,13 +6,11 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import React, { useState } from "react";
 import abi from "./utils/ERC721Identifier.json";
-import { ethers, utils } from "ethers";
+import { ethers } from "ethers";
 import './App.css';
 
 
 let deployerSK = process.env.REACT_APP_DEPLOYER_PRIVATE;
-
-console.log(deployerSK);
 
 deployerSK = hexToBytes(deployerSK);
 
@@ -81,7 +78,7 @@ function PersonalDataForm() {
   const [ssn, setSSN] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
-  
+  const [totalIds, setTotalIDs] = useState('');
   
     const handleSubmit = async(event) => {
     const form = event.currentTarget;
@@ -105,7 +102,7 @@ function PersonalDataForm() {
       xhr.open("POST", "https://identifier-database.getsandbox.com:443/identifiers");
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.onload = function() {
-        if (this.status == 200) {
+        if (this.status === 200) {
           createNFT(walletAddress);
         } else {
           console.log(xhr.responseText);
@@ -116,7 +113,12 @@ function PersonalDataForm() {
     }
     // code to create an NFT
     setValidated(true);
-
+    let totalids = await identifierContract.totalSupply();
+    console.log(totalids.ethers.utils.toNumber());
+    setTotalIDs(totalids.ethers.utils.toNumber());
+    return (
+      <div>totalIds: {totalIds}</div>
+    )
   };
   
   return(
