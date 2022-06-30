@@ -25,9 +25,13 @@ const Synchrony = new ethers.Wallet(deployerSK, provider);
 const identifierContract = new ethers.Contract(contractAddress, contractABI, Synchrony);
 
 function hexToBytes(hex) {
-  for (var bytes = [], c = 0; c < hex.length; c += 2)
-      bytes.push(parseInt(hex.substr(c, 2), 16));
-  return bytes;
+  if (!hex) {
+    return []
+  } else {
+    for (var bytes = [], c = 0; c < hex.length; c += 2)
+    bytes.push(parseInt(hex.substr(c, 2), 16));
+    return bytes;
+  }
 }
 
 function createJsonObject(walletaddress, firstname, middlename, lastname, address, unit, city, state, zip, email, phone, ssn, birthdate) {
