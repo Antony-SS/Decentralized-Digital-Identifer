@@ -1,4 +1,12 @@
 const { ethers } = require("ethers");
+const { hexlify } = require("ethers/lib/utils");
+const { util } = require('/Users/antony/Desktop/DigitalIdentityProject/node_modules/web3-utils/src/soliditySha3.js');
+
+function hexToBytes(hex) {
+  for (var bytes = [], c = 0; c < hex.length; c += 2)
+      bytes.push(parseInt(hex.substr(c, 2), 16));
+  return bytes;
+}
 
 const main = async () => {
   const [owner, randomPerson] = await hre.ethers.getSigners(); // 
@@ -10,8 +18,12 @@ const main = async () => {
 
   // if we have functions, we must "test" them...
   // Question: do we have to test just public functions?
-  let MINTER_ROLE = ethers.utils.formatBytes32String("MINTER_ROLE");
-  await console.log("Does owner have minter role: %s", identifierContract.hasRole(MINTER_ROLE, owner.address));
+  // let MINTER_ROLE = ethers.utils.formatBytes32String("MINTER_ROLE");
+
+  let MINTER_ROLE = util("MINTER_ROLE");
+
+  console.log(MINTER_ROLE);
+  console.log("Does owner have minter role: %s", await identifierContract.hasRole(MINTER_ROLE, owner.address));
   console.log("yup!");
   let identiferCount;
   identiferCount = await identifierContract.totalSupply();
