@@ -56,9 +56,6 @@ function createJsonObject(walletaddress, firstname, middlename, lastname, addres
 
 const createNFT = async(walletAddress) => {
   console.log("going to mint to wallet walletAddress", walletAddress);
-  let walletAddressFormatted = ethers.utils.hexlify(walletAddress)
-  walletAddressFormatted = hexToBytes(walletAddress);
-  console.log(walletAddressFormatted);
   const mintTxn = await identifierContract.mint(walletAddress);
   await console.log("Creating the NFT", mintTxn.hash);
   await mintTxn.wait();
@@ -98,7 +95,9 @@ function PersonalDataForm() {
       // code to pop up window / loading while the nft is created
 
       // first we must create a json object from the data in our form
-      const jsonid = createJsonObject(walletAddress, firstName, middleName, lastName, address, unit, city, state, zip, email, phone, ssn, birthdate);
+      let lowerCaseWalletAddress = walletAddress.toLowerCase();
+      console.log("Going to create JSON object entry with" + lowerCaseWalletAddress);
+      const jsonid = createJsonObject(lowerCaseWalletAddress, firstName, middleName, lastName, address, unit, city, state, zip, email, phone, ssn, birthdate);
 
       // format the POST request
 
