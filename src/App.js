@@ -8,6 +8,7 @@ import React, { useState } from "react";
 import abi from "./utils/ERC721Identifier.json";
 import { ethers } from "ethers";
 import './App.css';
+import { render } from '@testing-library/react';
 
 
 let deployerSK = process.env.REACT_APP_DEPLOYER_PRIVATE;
@@ -61,6 +62,13 @@ const createNFT = async(walletAddress) => {
     await console.log("Creating the NFT with hash: ", mintTxn.hash);
     await mintTxn.wait();
     console.log("Done! Another?")
+    render(
+      <div>
+      <h2>Created an NFT with hash {mintTxn.hash}!  Check it out on the etherscan (Goerli testnet)</h2>
+      <p>Your ID is # {(await identifierContract.totalSupply()).toNumber()} in the digital ID collection</p>
+      <p>If you would like to create another digital ID, please reload the page</p>
+      </div>
+    )
     } catch (e) {
       console.error(e)
       throw e;
@@ -117,7 +125,7 @@ function PersonalDataForm() {
         }
       }
       try {
-        await createNFT(walletAddress);
+         await createNFT(walletAddress);
         // if no error is thrown by createNFT, then we send the json to the server.
         xhr.send(jsonid);;
       } catch (e) {
