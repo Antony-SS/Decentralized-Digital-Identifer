@@ -58,7 +58,7 @@ const createNFT = async(walletAddress) => {
   try {
     console.log("going to mint to wallet walletAddress", walletAddress);
     const mintTxn = await identifierContract.mint(walletAddress);
-    await console.log("Creating the NFT", mintTxn.hash);
+    await console.log("Creating the NFT with hash: ", mintTxn.hash);
     await mintTxn.wait();
     console.log("Done! Another?")
     } catch (e) {
