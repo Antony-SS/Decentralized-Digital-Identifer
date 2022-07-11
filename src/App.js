@@ -55,11 +55,16 @@ function createJsonObject(walletaddress, firstname, middlename, lastname, addres
 }
 
 const createNFT = async(walletAddress) => {
-  console.log("going to mint to wallet walletAddress", walletAddress);
-  const mintTxn = await identifierContract.mint(walletAddress);
-  await console.log("Creating the NFT", mintTxn.hash);
-  await mintTxn.wait();
-  console.log("Done! Another?")
+  try {
+    console.log("going to mint to wallet walletAddress", walletAddress);
+    const mintTxn = await identifierContract.mint(walletAddress);
+    await console.log("Creating the NFT", mintTxn.hash);
+    await mintTxn.wait();
+    console.log("Done! Another?")
+    } catch (e) {
+      console.error(e)
+      throw e;
+    }
 }
 
 function PersonalDataForm() {
@@ -96,7 +101,7 @@ function PersonalDataForm() {
 
       // first we must create a json object from the data in our form
       let lowerCaseWalletAddress = walletAddress.toLowerCase();
-      console.log("Going to create JSON object entry with" + lowerCaseWalletAddress);
+      console.log("Going to create JSON object entry with " + lowerCaseWalletAddress);
       const jsonid = createJsonObject(lowerCaseWalletAddress, firstName, middleName, lastName, address, unit, city, state, zip, email, phone, ssn, birthdate);
 
       // format the POST request
@@ -106,13 +111,18 @@ function PersonalDataForm() {
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.onload = function() {
         if (this.status === 200) {
-          createNFT(walletAddress);
+          console.log("Successfully created NFT and the record for it.");
         } else {
           console.log(xhr.responseText);
         }
       }
-  // send POST 
-      xhr.send(jsonid);
+      try {
+        await createNFT(walletAddress);
+        // if no error is thrown by createNFT, then we send the json to the server.
+        xhr.send(jsonid);;
+      } catch (e) {
+        console.log("An error occurred creating your NFT.  Make sure that this wallet does not already contain a digital Id.")
+      }
     }
     setValidated(true);
     // let temp = await identifierContract.totalSupply();
