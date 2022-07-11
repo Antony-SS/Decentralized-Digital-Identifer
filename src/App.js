@@ -316,7 +316,6 @@ function PersonalDataForm() {
 }
 
 function App() {
-  const [validated, setValidated] = useState(false);
   return (
     <div className="App">
   <Navbar variant='dark' bg='dark' sticky = 'top'>
@@ -336,7 +335,6 @@ function App() {
   <div className="formContainer">  
       {PersonalDataForm()}
   </div>
-  
 </div>
   );
 }
