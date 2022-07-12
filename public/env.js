@@ -10,7 +10,7 @@ window.env = {
   "TMPDIR": "/var/folders/h0/m9q44zxn5j3bf76vc02cj1xr0000gn/T/",
   "npm_config_global_prefix": "/Users/antony/.nvm/versions/node/v16.13.1",
   "CONDA_SHLVL": "0",
-  "TERM_PROGRAM_VERSION": "1.69.0",
+  "TERM_PROGRAM_VERSION": "1.69.1",
   "ORIGINAL_XDG_CURRENT_DESKTOP": "undefined",
   "MallocNanoZone": "0",
   "COLOR": "1",

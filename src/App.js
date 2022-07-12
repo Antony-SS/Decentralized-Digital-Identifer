@@ -14,7 +14,7 @@ let deployerSK = process.env.REACT_APP_DEPLOYER_PRIVATE;
 
 deployerSK = hexToBytes(deployerSK);
 
-const contractAddress= '0x88D5487165De3AC223a769E73Df8633A41E74585';
+const contractAddress= '0xdFce4eb569634a5e3DC5BE7436667D5259f3de9b';
 const contractABI = abi.abi;
 const provider = new ethers.providers.JsonRpcProvider('https://eth-goerli.alchemyapi.io/v2/E5Ogmdfcb9fdjqsW3zNW3ab93X8m1Ihy');
 
