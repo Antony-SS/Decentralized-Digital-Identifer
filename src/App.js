@@ -4,10 +4,13 @@ import mainLogo from'./SYF.png';
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import abi from "./utils/ERC721Identifier.json";
 import { ethers } from "ethers";
+import { encrypt } from '@metamask/eth-sig-util'
 import './App.css';
+const ascii85 = require('ascii85');
+const ethUtil = require('ethereumjs-util')
 
 
 let deployerSK = process.env.REACT_APP_DEPLOYER_PRIVATE;
@@ -34,21 +37,39 @@ function hexToBytes(hex) {
   }
 }
 
-function createJsonObject(walletaddress, firstname, middlename, lastname, address, unit, city, state, zip, email, phone, ssn, birthdate) {
+function encryptData(publicKey, data) {
+  const enc = ethUtil.bufferToHex(
+    Buffer.from(
+      JSON.stringify(
+        encrypt({
+          publicKey: publicKey.toString('base64'),
+          data: data,
+          version: 'x25519-xsalsa20-poly1305',
+        })
+      ),
+      'utf8'
+    )
+  );
+  console.log(enc);
+  return enc;
+}
+
+
+function createEncryptedJsonObject(publicEncryptionKey, walletaddress, firstname, middlename, lastname, address, unit, city, state, zip, email, phone, ssn, birthdate) {
   const idinfo = {
-    walletAddress: walletaddress,
-    firstName: firstname,
-    middlename: middlename,
-    lastName: lastname,
-    address: address,
-    unit: unit,
-    city: city,
-    state: state,
-    zip: zip,
-    email: email,
-    phone: phone,
-    ssn: ssn, 
-    _birthdate: birthdate
+    walletAddress: walletaddress, 
+    firstName: encryptData(publicEncryptionKey, firstname),
+    middlename: encryptData(publicEncryptionKey, middlename),
+    lastName: encryptData(publicEncryptionKey, lastname),
+    address: encryptData(publicEncryptionKey, address),
+    unit: encryptData(publicEncryptionKey, unit),
+    city: encryptData(publicEncryptionKey, city),
+    state: encryptData(publicEncryptionKey, state),
+    zip: encryptData(publicEncryptionKey, zip),
+    email: encryptData(publicEncryptionKey, email),
+    phone: encryptData(publicEncryptionKey, phone),
+    ssn: encryptData(publicEncryptionKey, ssn), 
+    _birthdate: encryptData(publicEncryptionKey, birthdate)
   } 
   const jsonidinfo = JSON.stringify(idinfo);
   return jsonidinfo;
@@ -67,6 +88,8 @@ const createNFT = async(walletAddress) => {
     }
 }
 
+
+
 function PersonalDataForm() {
   const [validated, setValidated] = useState(false);
   const [checkBoxState, setCheckBoxState] = useState(false);
@@ -84,7 +107,64 @@ function PersonalDataForm() {
   const [ssn, setSSN] = useState('');
   const [birthdate, setBirthdate] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
-  // const [totalIds, setTotalIDs] = useState(0);
+  const [currentAccount, setCurrentAccount] = useState('');
+  const [buttonText, setButtonText] = useState("Connect Wallet");
+
+  // Metamask functionality, mostly boilerplate
+  const isMetaMaskInstalled = async () => {
+    const { ethereum } = window;
+    return Boolean(ethereum && ethereum.isMetaMask);
+  }
+  
+  const checkIfWalletIsConnected = async () => {
+    if (isMetaMaskInstalled() === false) {
+      console.log("Get Metamask!");
+      alert("Get Metamask!");
+      return false;
+      // only logging to console for now, can add functionality to display a link . . .
+    }
+    
+    try {
+  
+      const { ethereum } = window;
+      
+      const accounts = await ethereum.request({ method: 'eth_accounts' });
+      
+      if (accounts.length !== 0) {
+        const account = accounts[0];
+        console.log("Found an authorized account:", account);
+        setCurrentAccount(account);
+        setWalletAddress(account);
+        setButtonText("Connected with: " + currentAccount);
+        return true;
+      } else {
+        console.log("No authorized account found");
+        return false;
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+  
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
+      }
+
+      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+      console.log("Connected", accounts[0]);
+      setCurrentAccount(accounts[0]);
+      setWalletAddress(accounts[0]);
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   
     const handleSubmit = async(event) => {
     const form = event.currentTarget;
@@ -99,13 +179,24 @@ function PersonalDataForm() {
       // console.info(cid);
       // code to pop up window / loading while the nft is created
 
-      // first we must create a json object from the data in our form
-      let lowerCaseWalletAddress = walletAddress.toLowerCase();
-      console.log("Going to create JSON object entry with " + lowerCaseWalletAddress);
-      const jsonid = createJsonObject(lowerCaseWalletAddress, firstName, middleName, lastName, address, unit, city, state, zip, email, phone, ssn, birthdate);
+      // first we must create a json object from the data in our form, must be encrypted as well
+      console.log("Going to create JSON object entry with " + currentAccount);
 
+      // This is where data will be encrypted
+      const { ethereum } = window;
+
+      const keyB64 = await ethereum.request({
+        method: 'eth_getEncryptionPublicKey',
+        params: [currentAccount],
+      });
+
+      const publicEncryptionKey = Buffer.from(keyB64, 'base64');
+
+      console.log(publicEncryptionKey);
+
+      const encryptedJsonId = createEncryptedJsonObject(publicEncryptionKey, currentAccount, firstName, middleName, lastName, address, unit, city, state, zip, email, phone, ssn, birthdate);
+      
       // format the POST request
-
       let xhr = new XMLHttpRequest();
       xhr.open("POST", "https://identifier-database.getsandbox.com:443/identifiers");
       xhr.setRequestHeader("Content-Type", "application/json");
@@ -119,20 +210,24 @@ function PersonalDataForm() {
       try {
          await createNFT(walletAddress);
         // if no error is thrown by createNFT, then we send the json to the server.
-        xhr.send(jsonid);;
+        xhr.send(encryptedJsonId);
       } catch (e) {
         console.log("An error occurred creating your NFT.  Make sure that this wallet does not already contain a digital Id.")
       }
     }
     setValidated(true);
-    // let temp = await identifierContract.totalSupply();
-    // console.log((temp.toNumber()));
-    // setTotalIDs(temp.toNumber());
   };
+
+  useEffect(() => {
+    checkIfWalletIsConnected();
+  }, [currentAccount]) // eslint-disable-line react-hooks/exhaustive-deps
   
   return(
-    displayform && (
+    <div className='wrapper'>
+    <Row>
+    {displayform && (
       <>
+    <button className="connectWallet" id="connectWallet" onClick= {connectWallet}>{buttonText}</button>
     <Form noValidate validated = {validated} onSubmit = {handleSubmit} >
       <Row className="mb-3">
         <Form.Group as={Col} controlId="firstName">
@@ -293,18 +388,10 @@ function PersonalDataForm() {
       </Form.Group>
           {checkBoxState === true && (          
             <>
-          <Form.Group controlId="formPublicAddress">
-            <Form.Label>Eth Wallet Address</Form.Label>
-            <Form.Control required placeholder= "0xAd. . . " onChange={event => setWalletAddress(event.target.value)} />
-            <Form.Control.Feedback type="invalid">
-              Please enter Wallet Address
-            </Form.Control.Feedback>
-            <br></br>
-          </Form.Group>
-            
+            <p>Will mint to address: {currentAccount} </p>
             </>
           )
-          }
+        }
 
       <Button variant="primary" type="submit">
         Submit
@@ -312,10 +399,15 @@ function PersonalDataForm() {
     </Form>
       </>
       )
+}
+    </Row>
+    </div>
       )
 }
 
+
 function App() {
+
   return (
     <div className="App">
   <Navbar variant='dark' bg='dark' sticky = 'top'>
