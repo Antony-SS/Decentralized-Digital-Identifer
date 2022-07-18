@@ -9,7 +9,6 @@ import abi from "./utils/ERC721Identifier.json";
 import { ethers } from "ethers";
 import { encrypt } from '@metamask/eth-sig-util'
 import './App.css';
-const ascii85 = require('ascii85');
 const ethUtil = require('ethereumjs-util')
 
 
