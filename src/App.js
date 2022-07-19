@@ -16,7 +16,7 @@ let deployerSK = process.env.REACT_APP_DEPLOYER_PRIVATE;
 
 deployerSK = hexToBytes(deployerSK);
 
-const contractAddress= '0xdFce4eb569634a5e3DC5BE7436667D5259f3de9b';
+const contractAddress= '0x356207B68202F712A8b7cc8E6eA34FafBfC4eD9f';
 const contractABI = abi.abi;
 const provider = new ethers.providers.JsonRpcProvider('https://eth-goerli.alchemyapi.io/v2/E5Ogmdfcb9fdjqsW3zNW3ab93X8m1Ihy');
 
@@ -26,6 +26,11 @@ const Synchrony = new ethers.Wallet(deployerSK, provider);
 
 const identifierContract = new ethers.Contract(contractAddress, contractABI, Synchrony);
 
+/**
+ * 
+ * @param {string} hex The hexstring to turn into bytes 
+ * @returns bytes
+ */
 function hexToBytes(hex) {
   if (!hex) {
     return []
@@ -36,6 +41,12 @@ function hexToBytes(hex) {
   }
 }
 
+/**
+ * Encrpyts a given piece of data
+ * @param {base64} publicKey Public encryption key in the buffered in base64 format
+ * @param {string} data Data to be encrypted
+ * @returns Encrpyted data object in buffered to hex
+ */
 function encryptData(publicKey, data) {
   const enc = ethUtil.bufferToHex(
     Buffer.from(
@@ -49,11 +60,17 @@ function encryptData(publicKey, data) {
       'utf8'
     )
   );
-  console.log(enc);
+
   return enc;
 }
 
 
+/**
+ * 
+ * @param {base64} publicEncryptionKey Public encryption key in the buffered in base64 format
+ * @param {string} walletaddress Rest of parameters also follow this format.  This the the identifier data to be placed into a json object and encrypted
+ * @returns encrypted jsonid
+ */
 function createEncryptedJsonObject(publicEncryptionKey, walletaddress, firstname, middlename, lastname, address, unit, city, state, zip, email, phone, ssn, birthdate) {
   const idinfo = {
     walletAddress: walletaddress, 
@@ -74,19 +91,6 @@ function createEncryptedJsonObject(publicEncryptionKey, walletaddress, firstname
   return jsonidinfo;
 }
 
-const createNFT = async(walletAddress) => {
-  try {
-    console.log("going to mint to wallet walletAddress", walletAddress);
-    const mintTxn = await identifierContract.mint(walletAddress);
-    await console.log("Creating the NFT with hash: ", mintTxn.hash);
-    await mintTxn.wait();
-    console.log("Done! Another?")
-    } catch (e) {
-      console.error(e)
-      throw e;
-    }
-}
-
 
 
 function PersonalDataForm() {
@@ -105,9 +109,28 @@ function PersonalDataForm() {
   const [phone, setPhone] = useState('');
   const [ssn, setSSN] = useState('');
   const [birthdate, setBirthdate] = useState('');
-  const [walletAddress, setWalletAddress] = useState('');
   const [currentAccount, setCurrentAccount] = useState('');
   const [buttonText, setButtonText] = useState("Connect Wallet");
+  const [afterSubmitText, setAfterSubmitText] = useState('');
+
+  /**
+ * 
+ * @param {string} walletAddress The wallet address of the account to mint an NFT to
+ * @returns hash of transcation if successful
+ */
+
+const createNFT = async(walletAddress) => {
+  try {
+    console.log("going to mint to wallet walletAddress", walletAddress);
+    const mintTxn = await identifierContract.mint(walletAddress);
+    await console.log("Creating the NFT with hash: ", mintTxn.hash);
+    await mintTxn.wait();
+    console.log("Done! Another?")
+    } catch (e) {
+      console.error(e)
+      throw e;
+    }
+}
 
   // Metamask functionality, mostly boilerplate
   const isMetaMaskInstalled = async () => {
@@ -127,13 +150,13 @@ function PersonalDataForm() {
   
       const { ethereum } = window;
       
+      // request access to eth accounts in metamask
       const accounts = await ethereum.request({ method: 'eth_accounts' });
       
       if (accounts.length !== 0) {
         const account = accounts[0];
         console.log("Found an authorized account:", account);
         setCurrentAccount(account);
-        setWalletAddress(account);
         setButtonText("Connected with: " + currentAccount);
         return true;
       } else {
@@ -157,7 +180,6 @@ function PersonalDataForm() {
       const accounts = await ethereum.request({ method: "eth_requestAccounts" });
       console.log("Connected", accounts[0]);
       setCurrentAccount(accounts[0]);
-      setWalletAddress(accounts[0]);
 
     } catch (error) {
       console.log(error)
@@ -173,10 +195,12 @@ function PersonalDataForm() {
     } else {
       event.preventDefault();
       setDisplayForm(false);
+      setAfterSubmitText("Loading . . . ")
+      
+      // Commented code is in the first step in migrating to ipfs instead of an API endpoint
       // const ipfs = IPFS.create();
       // const {cid} = ipfs.add('Hello World');
       // console.info(cid);
-      // code to pop up window / loading while the nft is created
 
       // first we must create a json object from the data in our form, must be encrypted as well
       console.log("Going to create JSON object entry with " + currentAccount);
@@ -193,7 +217,9 @@ function PersonalDataForm() {
 
       console.log(publicEncryptionKey);
 
+      setAfterSubmitText(" Encrypting . . .")
       const encryptedJsonId = createEncryptedJsonObject(publicEncryptionKey, currentAccount, firstName, middleName, lastName, address, unit, city, state, zip, email, phone, ssn, birthdate);
+
       
       // format the POST request
       let xhr = new XMLHttpRequest();
@@ -202,19 +228,22 @@ function PersonalDataForm() {
       xhr.onload = function() {
         if (this.status === 200) {
           console.log("Successfully created NFT and the record for it.");
+          setAfterSubmitText("Successfully minted NFT to wallet address: " + currentAccount + ".  Please proceed to the login website!");
+          setValidated(true);
         } else {
           console.log(xhr.responseText);
         }
       }
       try {
-         await createNFT(walletAddress);
+        setAfterSubmitText("Creating NFT . . . Blockchain is a distributed system so this may take a few seconds");
+        await createNFT(currentAccount);
         // if no error is thrown by createNFT, then we send the json to the server.
         xhr.send(encryptedJsonId);
       } catch (e) {
         console.log("An error occurred creating your NFT.  Make sure that this wallet does not already contain a digital Id.")
+        setAfterSubmitText("An error occurred creating your NFT.  Make sure that this wallet does not already contain a digital Id.");
       }
-    }
-    setValidated(true);
+    }  
   };
 
   useEffect(() => {
@@ -398,15 +427,20 @@ function PersonalDataForm() {
     </Form>
       </>
       )
-}
+    }
+    { !displayform && (
+      <>
+      <p>{ afterSubmitText }</p>
+      
+  
+      </>
+    )}
     </Row>
     </div>
       )
 }
 
-
 function App() {
-
   return (
     <div className="App">
   <Navbar variant='dark' bg='dark' sticky = 'top'>

@@ -52,6 +52,8 @@
   color: whitesmoke;
   font-size: 22px;
   margin-bottom: 20px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 .wrapper {
