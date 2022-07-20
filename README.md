@@ -47,9 +47,9 @@ Whitepaper: Coming Soon
 The repository is broken down into the following 3 folders:
 - Smart Contracts: Provides the smart contracts and scripts to run, test, and deploy smart contracts.
 
-- Synchrony Application Website: React App to simulate  a customer applying for a bank account/credit card.  This is where their "Digital Identity" is created
+- Application Website: React App to simulate  a customer applying for a bank account/credit card.  This is where their "Digital Identity" is created
 
-- Synchrony Login Website: A React App to simulate a customer login with an ethereum wallet
+- Login Website: A React App to simulate a customer login with an ethereum wallet
 
 Each folder will contain further instruction on its' use.  Follow instructions there.
 
