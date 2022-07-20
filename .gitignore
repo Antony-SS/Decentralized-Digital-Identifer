@@ -4,7 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
-env.js
+/env.js
 
 # testing
 /coverage
@@ -22,3 +22,4 @@ env.js
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+application-website/public/env.js
