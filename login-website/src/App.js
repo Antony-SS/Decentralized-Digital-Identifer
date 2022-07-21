@@ -4,6 +4,7 @@ import mainLogo from'./utils/SYF.png';
 import abi from "./utils/ERC721Identifier.json";
 import Navbar from 'react-bootstrap/Navbar';
 import './App.css';
+import { Row } from "react-bootstrap";
 
 
 function App() {
@@ -12,20 +13,24 @@ function App() {
   // const [buttonState, setButtonState] = useState(false);
   const [directions, setDirections] = useState("Please connect wallet to login.  Make sure that your wallet is running on the Goerli testnet.");
   const [jsonId, setJsonId] = useState();
-  const [decryptedJsonId, setDecryptedJsonId] = useState();
+  const [decryptedJsonId, setDecryptedJsonId] = useState('');
 
   const green = "#28b715b6";
   const red = "#ee0404b6";
 
-  const contractAddress = "0x7e23eda708FFF02440E90856deD94D766B398f42"; // to be added for the new contract that I make
+  const contractAddress = "0x71216e9d9604186130638e6a81ec339dc7272Ad7"; // to be added for the new contract that I make
   const contractABI = abi.abi;
 
-  function decryptJsonId() {
+  const decryptJsonId = async () => {
+    console.log("Calling Decrypt ID");
     const { ethereum } = window;
     
     let temp = jsonId;
+
+    let counter = 0;
     // iterating through every value in the json object except walletAddress (since it is unencrypted)
     Object.keys(jsonId).forEach((key) => {
+      counter += 1;
       if (key !== "walletAddress") {
         ethereum
           .request({
@@ -33,15 +38,15 @@ function App() {
             params: [temp[key], currentAccount],
           })
           .then(function(decryptedMessage) { 
-            console.log(decryptedMessage);
             temp[key] = decryptedMessage;
+            //setDecryptedJsonId(temp);
+            document.getElementById(key).innerText = decryptedMessage;
           })
           .catch((error) => console.log(error.message));
-      }
-    })
-    setDecryptedJsonId(temp);
-    setJsonId('');
-    console.log("From newly decrypted object", decryptedJsonId.firstName);
+        }
+      })
+    console.log("Calling now!");
+    document.getElementById("decryptButton").style.display = 'none';
   }
 
   const isMetaMaskInstalled = async () => {
@@ -61,9 +66,8 @@ function App() {
     try {
 
       const { ethereum } = window;
-      
+      setJsonId('');
       const accounts = await ethereum.request({ method: 'eth_accounts' });
-      
       if (accounts.length !== 0) {
         const account = accounts[0];
         console.log("Found an authorized account:", account);
@@ -119,6 +123,7 @@ function App() {
 
           // get the token ID and URI, then create an ID card to display on screen
           let ownedTokenId = await (await identifierContract.tokenOfOwnerByIndex(currentAccount, 0)).toNumber(); // will get the first token id in a list of owner's owned tokens
+          console.log("Getting ID with URL", await identifierContract.tokenURI(ownedTokenId))
           await getId(await identifierContract.tokenURI(ownedTokenId));
           return;
 
@@ -163,7 +168,8 @@ function App() {
     console.log("Calling small hook");
     checkIfWalletIsConnected();
     verifyId();
-  }, [currentAccount, jsonId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentAccount]) // eslint-disable-line react-hooks/exhaustive-deps 
+
 
   return (
     <div className="App">
@@ -185,61 +191,55 @@ function App() {
         </div>
         <div className="directions">{directions}</div>
         <button className="connectWallet" id="connectWallet" onClick= {connectWallet}>{buttonText}</button>
-        { (jsonId && !decryptedJsonId) && (
+        { (jsonId) && (
           <>
             <div className="idCard">
               <div className="name">
-                {jsonId.lastName}, {jsonId.middleName} {jsonId.firstName}
+                <Row>
+                  <div id="lastName">
+                    {jsonId.lastName}
+                  </div>
+                  <div id="middleName">
+                   {jsonId.middleName}
+                  </div>
+                  <div id="firstName">
+                    {jsonId.firstName}
+                  </div>
+                </Row>
               </div>
-              <div className="info">
+              <div className="info" id="address">
                 {jsonId.address}
               </div>
+              <Row>
               <div className="info">
-                {jsonId.city}, {jsonId.state}, {jsonId.zip}
+                <div id="city">
+                  {jsonId.city},
+                </div>
+                <div id="state">
+                  {jsonId.state},
+                </div>
+                <div id="zip">
+                  {jsonId.zip}
+                </div>
               </div>
-              <div className="info">
+              </Row>
+              <div className="info" id="_birthdate">
                 {jsonId._birthdate}
               </div>
-              <div className="info">
+              <div className="info" id="email">
                 {jsonId.email}
               </div>
-              <div className="info">
+              <div className="info" id="phone">
                 {jsonId.phone}
               </div>
-              <div className="info">
+              <div className="info" id="ssn">
                 {jsonId.ssn}
               </div>
             </div>
-            <button className="decryptId" onClick={decryptJsonId}>Decrypt ID!</button>
+            <button id = "decryptButton" className="decryptId" onClick={decryptJsonId}>Decrypt ID!</button>
           </>
         )}
-        { decryptedJsonId && (
-          <>
-          <div className="idCard">
-              <div className="name">
-                {decryptedJsonId.lastName}, {decryptedJsonId.middleName} {decryptedJsonId.firstName}
-              </div>
-              <div className="info">
-                {decryptedJsonId.address}
-              </div>
-              <div className="info">
-                {decryptedJsonId.city}, {decryptedJsonId.state}, {decryptedJsonId.zip}
-              </div>
-              <div className="info">
-                {decryptedJsonId._birthdate}
-              </div>
-              <div className="info">
-                {decryptedJsonId.email}
-              </div>
-              <div className="info">
-                {decryptedJsonId.phone}
-              </div>
-              <div className="info">
-                {decryptedJsonId.ssn}
-              </div>
-            </div>
-          </>
-        )}
+
       </div>
     </div>
 
