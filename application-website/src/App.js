@@ -218,7 +218,7 @@ const createNFT = async(walletAddress) => {
       console.log(publicEncryptionKey);
 
       setAfterSubmitText(" Encrypting . . .")
-      const encryptedJsonId = createEncryptedJsonObject(publicEncryptionKey, currentAccount, firstName, middleName, lastName, address, unit, city, state, zip, email, phone, ssn, birthdate);
+      const encryptedJsonId = await createEncryptedJsonObject(publicEncryptionKey, currentAccount, firstName, middleName, lastName, address, unit, city, state, zip, email, phone, ssn, birthdate);
 
       
       // format the POST request
