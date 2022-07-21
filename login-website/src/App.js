@@ -17,7 +17,7 @@ function App() {
   const green = "#28b715b6";
   const red = "#ee0404b6";
 
-  const contractAddress = "0x356207B68202F712A8b7cc8E6eA34FafBfC4eD9f"; // to be added for the new contract that I make
+  const contractAddress = "0x7e23eda708FFF02440E90856deD94D766B398f42"; // to be added for the new contract that I make
   const contractABI = abi.abi;
 
   function decryptJsonId() {
