@@ -4,7 +4,6 @@ import mainLogo from'./utils/SYF.png';
 import abi from "./utils/ERC721Identifier.json";
 import Navbar from 'react-bootstrap/Navbar';
 import './App.css';
-import { Row } from "react-bootstrap";
 
 
 function App() {
@@ -26,7 +25,6 @@ function App() {
     
     let temp = jsonId;
 
-    let counter = 0;
     // iterating through every value in the json object except walletAddress (since it is unencrypted)
     Object.keys(jsonId).forEach((key) => {
       counter += 1;
