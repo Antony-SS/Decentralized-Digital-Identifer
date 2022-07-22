@@ -13,7 +13,6 @@ function App() {
   // const [buttonState, setButtonState] = useState(false);
   const [directions, setDirections] = useState("Please connect wallet to login.  Make sure that your wallet is running on the Goerli testnet.");
   const [jsonId, setJsonId] = useState();
-  const [decryptedJsonId, setDecryptedJsonId] = useState('');
 
   const green = "#28b715b6";
   const red = "#ee0404b6";
@@ -194,47 +193,53 @@ function App() {
         { (jsonId) && (
           <>
             <div className="idCard">
+
+              <div className="idimage">
+              <img src= {mainLogo} width='50' height='50' alt = 'synchrony logo'/>
+              </div>
+              
+              <div className="description">
+                Synchrony Digital ID
+              </div>
               <div className="name">
-                <Row>
-                  <div id="lastName">
-                    {jsonId.lastName}
-                  </div>
-                  <div id="middleName">
-                   {jsonId.middleName}
-                  </div>
-                  <div id="firstName">
-                    {jsonId.firstName}
-                  </div>
-                </Row>
+              <div id="lastName" className="lastName">
+                {jsonId.lastName}
+              </div>,&nbsp;
+              <div id="middleName" className="middleName">
+                {jsonId.middleName}
               </div>
-              <div className="info" id="address">
-                {jsonId.address}
+              <div id="firstName" className="firstName">
+                {jsonId.firstName}
               </div>
-              <Row>
-              <div className="info">
-                <div id="city">
-                  {jsonId.city},
-                </div>
-                <div id="state">
-                  {jsonId.state},
-                </div>
-                <div id="zip">
-                  {jsonId.zip}
-                </div>
+        
               </div>
-              </Row>
-              <div className="info" id="_birthdate">
-                {jsonId._birthdate}
-              </div>
-              <div className="info" id="email">
-                {jsonId.email}
-              </div>
-              <div className="info" id="phone">
-                {jsonId.phone}
-              </div>
-              <div className="info" id="ssn">
+              <div className="ssn" id="ssn">
                 {jsonId.ssn}
               </div>
+              <div className="addressholder">
+              <div className="address" id="address">
+                {jsonId.address}
+              </div>,&nbsp;
+              <div className="city" id="city">
+                {jsonId.city}
+              </div>,&nbsp;
+              <div id="state" className="state">
+                {jsonId.state},
+              </div>
+              </div>
+              <div id="zip" className="zip">
+                {jsonId.zip}
+              </div>
+              <div className="birthdate" id="_birthdate">
+                {jsonId._birthdate}
+              </div>
+              <div className="email" id="email">
+                {jsonId.email}
+              </div>
+              <div className="phone" id="phone">
+                {jsonId.phone}
+              </div>
+              
             </div>
             <button id = "decryptButton" className="decryptId" onClick={decryptJsonId}>Decrypt ID!</button>
           </>
