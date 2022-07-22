@@ -27,7 +27,6 @@ function App() {
 
     // iterating through every value in the json object except walletAddress (since it is unencrypted)
     Object.keys(jsonId).forEach((key) => {
-      counter += 1;
       if (key !== "walletAddress") {
         ethereum
           .request({
