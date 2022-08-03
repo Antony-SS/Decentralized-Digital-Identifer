@@ -2,7 +2,7 @@
 
 ## Functionality
 
-The ERC721Identifier smart contract is an ERC721 contract with a few key extensions that make it more suitable for a bank/bank consortium looking to create and manage and identity management system.  
+The ERC721Identifier smart contract is an ERC721 contract with a few key extensions that make it more suitable for a bank/bank consortium looking to create an identity management system.  
 
 The extensions include:
 
