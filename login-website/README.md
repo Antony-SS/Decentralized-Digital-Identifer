@@ -1,70 +1,23 @@
-# Getting Started with Create React App
+# Login Website
+## Functionality
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This login website is a simple React App to simulate a customer logging in to an account of some sort.  For example to pay a credit card bill or view their bank account.  This is where we check if the customer possesses a Synchrony Digital ID and the metadata associated with their digital ID should they have one.  I also included functionality for the customer to decrypt their metadata, which is more for the customer experience and is actually not needed in the login process.
 
-## Available Scripts
+The process looks like this:
 
-In the project directory, you can run:
+1. The customer connects their metamask wallet
+2. A call is made to the smart contract you deployed requesting the balance of the connected wallet address (balance here refers to the balance of NFTs created by this contract).  
+3. If the wallet holds 1 Synchrony Digital ID, the token URI within the NFT is used in a get request to retrieve the metadata associated with the customer’s NFT (currently storing in GetSandbox).  
+4. Button turns green, customer metadata is displayed (still encrypted)
+5. At this point the user is logged into the website.  I offer the option for the user to decrypt the metadata merely to show that the functionality is possible and inspire further use cases.
+6. If the customer hits the decrypt button, Metamask prompts the customer to use their private key to decrypt the metadata.
+7. Going back to step 3, if the customer does not have a Synchrony Digital ID in their wallet, the button turns red, and the customer is informed that they do not yet have an account. 
 
-### `npm start`
+## Folder Breakdown
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This is a basic React App.  All functionality is contained in App.js.  Nothing crazy, even Metamask functionality does not get more complicated the React hooks.  
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Instructions
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. npm i to install dependencies
+2. npm start to begin local development
