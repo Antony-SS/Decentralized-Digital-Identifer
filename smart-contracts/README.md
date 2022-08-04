@@ -48,7 +48,7 @@ For this script to work you will to create accounts and get API keys for each of
 
 Additionally, since we are deploying to a testnet from a wallet that we own, we need Goerli testnet Eth to fund our transactions.  Do this by funding your wallet with a Goerli testnet faucet.
 
-**In order to run scripts you must use the npx hardhat run command.  So for deploy.js it would be: npx hardhat run scripts/deploy.js **
+**In order to run scripts you must use the npx hardhat run command.  So for deploy.js it would be: npx hardhat run scripts/deploy.js**
 
 ## Instructions
 
