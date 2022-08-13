@@ -26,7 +26,7 @@ Holds the actual smart contract code.  It is ERC721Identifier.sol.  If you would
 
 Use the OpenZepplin docs and standards to implement or edit functionality. 
 
-1. **Scripts**
+2. **Scripts**
 
 Holds the scripts needed to deploy/test locally and to deploy to the mainnet/testnets.  The run.js script spins up a local Ethereum network on your computer and deploys the contract to it.  You can then call functions to test your contract.  
 
