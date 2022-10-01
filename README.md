@@ -18,10 +18,6 @@ It is because it has been nearly impossible to prove you have/are something over
 
 **Blockchain changes that.  We can now prove that we own a unique digital asset over the internet.  This opens the gateway for a new era of authetication and digtal identity management.**
 
-### Demo
-
-Insert video here on gh.  Keep below 6 minutes
-
 ### Links
 
 **Make sure your Metamask is running on the Goerli testnet**
