@@ -33,7 +33,7 @@ Then here: [Login Website](https://synchronyloginwebsite.netlify.app/)
 
 ### Technical Explanation
 
-Whitepaper: https://www.notion.so/antony-ss/Digital-Identity-Blockchain-ERC721-NFTs-for-Digital-Identity-Management-and-Passwordless-Authenti-024e10e4b1d048b18133b5c7bfc0e6a9
+[Whitepaper](https://www.notion.so/antony-ss/Digital-Identity-Blockchain-ERC721-NFTs-for-Digital-Identity-Management-and-Passwordless-Authenti-024e10e4b1d048b18133b5c7bfc0e6a9)
 
 
 ## Devs
